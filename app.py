@@ -1,5 +1,7 @@
+import threading
 import asyncio
 import random
+from flask import Flask
 from telethon import TelegramClient, events
 import requests
 
@@ -8,6 +10,20 @@ api_id = 14367814
 api_hash = '2c219bbc33721773e7fc3e472a269f47'
 
 client = TelegramClient('session_session', api_id, api_hash)
+
+# Flask app para puerto abierto
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot funcionando"
+
+def run_flask():
+    # Escucha en 0.0.0.0:10000 para que Render detecte el puerto
+    app.run(host='0.0.0.0', port=10000)
+
+# --- Aquí va TODO tu código original, con funciones, comandos y todo ---
+
 
 # Datos falsos para simular hackeo
 fake_passwords = [
@@ -321,4 +337,8 @@ async def main():
     await client.run_until_disconnected()
 
 if __name__ == '__main__':
+    # Ejecutar Flask en un hilo separado para mantener puerto abierto
+    threading.Thread(target=run_flask, daemon=True).start()
+
+    # Ejecutar el bot async en el hilo principal
     asyncio.run(main())
