@@ -21,33 +21,25 @@ def home():
 def run_flask():
     app.run(host='0.0.0.0', port=10000)
 
-# ------------------- DATOS FALSOS --------------------
-fake_passwords = [
-    "p@$$w0rd123", "admin1234", "letmein!", "123456789", "trustno1",
-    "hunter2", "correcthorsebatterystaple", "iloveyou123", "qwertyuiop"
-]
-fake_ips = [
-    "192.168.1.42", "10.0.0.13", "172.16.254.1", "203.0.113.15", "198.51.100.23",
-    "45.33.32.156", "178.62.193.19"
-]
+# --- Datos falsos ---
+fake_passwords = ["p@$$w0rd123","admin1234","letmein!","123456789","trustno1","hunter2","correcthorsebatterystaple","iloveyou123","qwertyuiop"]
+fake_ips = ["192.168.1.42","10.0.0.13","172.16.254.1","203.0.113.15","198.51.100.23","45.33.32.156","178.62.193.19"]
 fake_locations = {
-    "usa": ["New York, USA", "Los Angeles, USA", "Chicago, USA"],
-    "germany": ["Berlin, Germany", "Munich, Germany", "Frankfurt, Germany"],
-    "brazil": ["São Paulo, Brazil", "Rio de Janeiro, Brazil", "Brasília, Brazil"],
-    "japan": ["Tokyo, Japan", "Osaka, Japan", "Kyoto, Japan"],
-    "france": ["Paris, France", "Lyon, France", "Marseille, France"]
+    "usa":["New York, USA","Los Angeles, USA","Chicago, USA"],
+    "germany":["Berlin, Germany","Munich, Germany","Frankfurt, Germany"],
+    "brazil":["São Paulo, Brazil","Rio de Janeiro, Brazil","Brasília, Brazil"],
+    "japan":["Tokyo, Japan","Osaka, Japan","Kyoto, Japan"],
+    "france":["Paris, France","Lyon, France","Marseille, France"]
 }
-fake_ports = [22, 80, 443, 8080, 3306, 21, 25, 110, 995, 993]
-
+fake_ports = [22,80,443,8080,3306,21,25,110,995,993]
 fake_names = {
-    "usa": ["John Doe", "Jane Smith", "Michael Johnson", "Emily Davis"],
-    "germany": ["Hans Müller", "Anna Schmidt", "Peter Fischer", "Laura Becker"],
-    "brazil": ["João Silva", "Maria Souza", "Carlos Oliveira", "Ana Pereira"],
-    "japan": ["Takeshi Yamada", "Yuki Tanaka", "Haruto Saito", "Miyu Kobayashi"],
-    "france": ["Jean Dupont", "Marie Martin", "Pierre Bernard", "Sophie Laurent"]
+    "usa":["John Doe","Jane Smith","Michael Johnson","Emily Davis"],
+    "germany":["Hans Müller","Anna Schmidt","Peter Fischer","Laura Becker"],
+    "brazil":["João Silva","Maria Souza","Carlos Oliveira","Ana Pereira"],
+    "japan":["Takeshi Yamada","Yuki Tanaka","Haruto Saito","Miyu Kobayashi"],
+    "france":["Jean Dupont","Marie Martin","Pierre Bernard","Sophie Laurent"]
 }
 
-# ------------------- FUNCIONES GENERALES --------------------
 def big_banner(text):
     banner = f"""
 ╔══════════════════════════════════════════════╗
@@ -82,22 +74,22 @@ async def simulate_hack(event, target_username):
     ]
 
     progress_msg = await event.respond("```" + big_banner("COMIENZA EL ATAQUE") + "```", parse_mode='markdown')
-    await asyncio.sleep(2)
+    await asyncio.sleep(1.5)
 
     for step in steps:
         if "ESCANEANDO" in step:
             for port in fake_ports:
                 bar = progress_bar(fake_ports.index(port)+1, len(fake_ports))
-                await progress_msg.edit(f"```\n{step}\nPuerto {port} abierto\n{bar}\n```", parse_mode='markdown')
-                await asyncio.sleep(random.uniform(0.8, 1.5))
+                await progress_msg.edit(f"```\n{step}\nPuerto {port} abierto\n{bar}\n```")
+                await asyncio.sleep(random.uniform(0.8,1.5))
         elif "DESCIFRANDO" in step:
-            for prog in range(0, 31, 3):
+            for prog in range(0,31,3):
                 bar = progress_bar(prog)
-                await progress_msg.edit(f"```\n{step}\n{bar}\n```", parse_mode='markdown')
-                await asyncio.sleep(random.uniform(1.0, 1.7))
+                await progress_msg.edit(f"```\n{step}\n{bar}\n```")
+                await asyncio.sleep(random.uniform(1.0,1.7))
         else:
-            await progress_msg.edit(f"```\n{step}\n```", parse_mode='markdown')
-            await asyncio.sleep(random.uniform(1.2, 2.2))
+            await progress_msg.edit(f"```\n{step}\n```")
+            await asyncio.sleep(random.uniform(1.2,2.2))
 
     fake_password = random.choice(fake_passwords)
     fake_ip = random.choice(fake_ips)
@@ -118,7 +110,7 @@ async def simulate_hack(event, target_username):
 
                     CREATED BY: @LooKsCrazy0
 """
-    await progress_msg.edit(f"```{final_text}```", parse_mode='markdown')
+    await progress_msg.edit("```" + final_text + "```")
 
 @client.on(events.NewMessage(pattern=r'/hack (.+)'))
 async def handler(event):
@@ -133,16 +125,14 @@ async def fake_data(event):
         country_key = country_key.lower()
     else:
         country_key = "usa"
-
     if country_key not in fake_locations:
         await event.respond(f"País no soportado. Usa uno de: {', '.join(fake_locations.keys())}")
         return
 
     progress_msg = await event.respond("```\nGenerando datos falsos...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%\n```", parse_mode='markdown')
-
-    for i in range(0, 31, 5):
+    for i in range(0,31,5):
         bar = progress_bar(i)
-        await progress_msg.edit(f"```\nGenerando datos falsos...\n{bar}\n```", parse_mode='markdown')
+        await progress_msg.edit(f"```\nGenerando datos falsos...\n{bar}\n```")
         await asyncio.sleep(0.5)
 
     fake_name = random.choice(fake_names[country_key])
@@ -164,14 +154,14 @@ async def fake_data(event):
 
 CREATED BY: @LooKsCrazy0
 """
-    await progress_msg.edit(f"```{message}```", parse_mode='markdown')
+    await progress_msg.edit(f"```{message}```")
 
 # ------------------- /genbin --------------------
 bin_prefixes = {
-    "visa": ["4"],
-    "mastercard": ["51", "52", "53", "54", "55"],
-    "amex": ["34", "37"],
-    "american": ["34", "37"]
+    "visa":["4"],
+    "mastercard":["51","52","53","54","55"],
+    "amex":["34","37"],
+    "american":["34","37"]
 }
 
 def luhn_checksum(card_number):
@@ -181,24 +171,23 @@ def luhn_checksum(card_number):
     odd_sum = sum(digits[-1::-2])
     even_sum = 0
     for d in digits[-2::-2]:
-        doubled = d * 2
+        doubled = d*2
         even_sum += sum(digits_of(doubled))
-    return (odd_sum + even_sum) % 10
+    return (odd_sum+even_sum)%10
 
 def calculate_luhn(partial_card):
-    check_digit = luhn_checksum(int(partial_card) * 10)
-    return (10 - check_digit) % 10
+    check_digit = luhn_checksum(int(partial_card)*10)
+    return (10 - check_digit)%10
 
 def generate_bin(card_type):
     if card_type not in bin_prefixes:
         return None
     prefix = random.choice(bin_prefixes[card_type])
-    length = 15 if card_type in ["amex", "american"] else 16
+    length = 15 if card_type in ["amex","american"] else 16
     number = prefix
-    while len(number) < (length - 1):
+    while len(number) < (length-1):
         number += str(random.randint(0,9))
-    check_digit = calculate_luhn(number)
-    number += str(check_digit)
+    number += str(calculate_luhn(number))
     return number
 
 @client.on(events.NewMessage(pattern=r'/genbin (.+)'))
@@ -207,9 +196,8 @@ async def genbin(event):
     if card_type not in bin_prefixes:
         await event.respond("Tipo de tarjeta no soportado. Usa: visa, mastercard, amex, american")
         return
-
     progress_msg = await event.respond("Conectando al banco más cercano...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%", parse_mode='markdown')
-    for i in range(0, 31, 5):
+    for i in range(0,31,5):
         bar = progress_bar(i)
         await progress_msg.edit(f"Conectando al banco más cercano...\n{bar}")
         await asyncio.sleep(0.5)
@@ -224,34 +212,29 @@ async def genbin(event):
 
 CREATED BY: @LooKsCrazy0
 """
-    await progress_msg.edit(f"```{message}```", parse_mode='markdown')
+    await progress_msg.edit(f"```{message}```")
 
 # ------------------- /bin --------------------
 @client.on(events.NewMessage(pattern=r'/bin (\d{6})'))
 async def bin_info(event):
     bin_code = event.pattern_match.group(1)
     progress_msg = await event.respond("Consultando BIN...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%", parse_mode='markdown')
-
-    for i in range(0, 31, 5):
+    for i in range(0,31,5):
         bar = progress_bar(i)
         await progress_msg.edit(f"Consultando BIN...\n{bar}")
         await asyncio.sleep(0.5)
-
     try:
         url = f"https://lookup.binlist.net/{bin_code}"
-        headers = {'Accept-Version': '3'}
-        response = requests.get(url, headers=headers)
-        data = response.json()
-
-        tipo = data.get("type", "Desconocido").capitalize()
-        marca = data.get("scheme", "Desconocido").capitalize()
-        prepaid = "Sí" if data.get("prepaid", False) else "No"
-        banco = data.get("bank", {}).get("name", "Desconocido")
-        ciudad = data.get("bank", {}).get("city", "N/A")
-        telefono = data.get("bank", {}).get("phone", "N/A")
-        pagina = data.get("bank", {}).get("url", "N/A")
-        pais = data.get("country", {}).get("name", "Desconocido")
-
+        headers = {'Accept-Version':'3'}
+        data = requests.get(url,headers=headers).json()
+        tipo = data.get("type","Desconocido").capitalize()
+        marca = data.get("scheme","Desconocido").capitalize()
+        prepaid = "Sí" if data.get("prepaid",False) else "No"
+        banco = data.get("bank",{}).get("name","Desconocido")
+        ciudad = data.get("bank",{}).get("city","N/A")
+        telefono = data.get("bank",{}).get("phone","N/A")
+        pagina = data.get("bank",{}).get("url","N/A")
+        pais = data.get("country",{}).get("name","Desconocido")
         message = f"""
 ╔════════════════════════════════════╗
 ║       Información del BIN {bin_code}       ║
@@ -269,10 +252,9 @@ async def bin_info(event):
 
 CREATED BY: @LooKsCrazy0
 """
-        await progress_msg.edit(f"```{message}```", parse_mode='markdown')
-
+        await progress_msg.edit(f"```{message}```")
     except Exception as e:
-        await progress_msg.edit(f"Error al consultar BIN: {str(e)}")
+        await progress_msg.edit(f"Error al consultar BIN: {str(e)}\nCREATED BY: @LooKsCrazy0")
 
 # ------------------- /randomquote --------------------
 motivational_quotes = [
@@ -287,87 +269,82 @@ motivational_quotes = [
     "No cuentes los días, haz que los días cuenten.",
     "La motivación te impulsa, el hábito te mantiene en marcha."
 ]
-
 used_quotes = set()
-
 @client.on(events.NewMessage(pattern=r'/randomquote'))
 async def random_quote(event):
     global used_quotes
     progress_msg = await event.respond("Cargando frase...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%", parse_mode='markdown')
-
-    for i in range(0, 31, 5):
+    for i in range(0,31,5):
         bar = progress_bar(i)
         await progress_msg.edit(f"Cargando frase...\n{bar}")
         await asyncio.sleep(0.5)
-
     if len(used_quotes) == len(motivational_quotes):
-        used_quotes.clear()  # Reiniciar cuando se usen todas
-
+        used_quotes.clear()
     remaining_quotes = [q for q in motivational_quotes if q not in used_quotes]
     quote = random.choice(remaining_quotes)
     used_quotes.add(quote)
-
     await progress_msg.edit(f"💡 *Frase motivacional:*\n\n_{quote}_\n\n_CREADO POR: @LooKsCrazy0_", parse_mode='markdown')
 
 # ------------------- /cgen --------------------
-@client.on(events.NewMessage(pattern=r'/cgen (\d{6,8})(?: (\d+))?(?: (\d{2}/\d{2}))?(?: (\d{3}))?'))
+@client.on(events.NewMessage(pattern=r'/cgen (\d{6})(?: (\d+))?'))
 async def cgen(event):
-    bin_input = event.pattern_match.group(1)
-    cantidad = int(event.pattern_match.group(2)) if event.pattern_match.group(2) else 1
-    cantidad = min(cantidad, 10)  # máximo 10 tarjetas
-    exp_date = event.pattern_match.group(3)
-    cvv_input = event.pattern_match.group(4)
+    bin_code = event.pattern_match.group(1)
+    quantity = int(event.pattern_match.group(2)) if event.pattern_match.group(2) else 1
+    progress_msg = await event.respond(f"Generando {quantity} tarjeta(s)...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%", parse_mode='markdown')
+    cards = []
+    for i in range(quantity):
+        number = bin_code
+        while len(number)<16:
+            number+=str(random.randint(0,9))
+        check = calculate_luhn(number[:-1])
+        number = number[:-1]+str(check)
+        exp_month = str(random.randint(1,12)).zfill(2)
+        exp_year = str(random.randint(23,30))
+        cvv = str(random.randint(100,999))
+        cards.append(f"{number}|{exp_month}|{exp_year}|{cvv}")
+        bar = progress_bar(i+1,quantity)
+        await progress_msg.edit(f"Generando {quantity} tarjeta(s)...\n{bar}")
+        await asyncio.sleep(0.3)
+    await progress_msg.edit("Tarjetas generadas:\n"+"\n".join(cards)+"\n\nCREATED BY: @LooKsCrazy0")
 
-    progress_msg = await event.respond("Generando tarjetas...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%", parse_mode='markdown')
-
-    for i in range(0, 31, 5):
+# ------------------- /cvalidate --------------------
+@client.on(events.NewMessage(pattern=r'/cvalidate (\d{13,19})'))
+async def cvalidate(event):
+    card_number = event.pattern_match.group(1)
+    progress_msg = await event.respond("Validando tarjeta...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%", parse_mode='markdown')
+    for i in range(0,31,5):
         bar = progress_bar(i)
-        await progress_msg.edit(f"Generando tarjetas...\n{bar}")
+        await progress_msg.edit(f"Validando tarjeta...\n{bar}")
         await asyncio.sleep(0.5)
-
-    tarjetas = []
-    for _ in range(cantidad):
-        length = 16
-        card_number = bin_input
-        while len(card_number) < (length - 1):
-            card_number += str(random.randint(0,9))
-        check_digit = calculate_luhn(card_number)
-        card_number += str(check_digit)
-        fecha = exp_date if exp_date else f"{random.randint(1,12):02d}/{random.randint(24,29)}"
-        cvv = cvv_input if cvv_input else f"{random.randint(100,999)}"
-        tarjetas.append((card_number, fecha, cvv))
-
-    msg = "╔════════════════════════════════════╗\n║         Tarjetas Generadas         ║\n╠════════════════════════════════════╣\n"
-    for t in tarjetas:
-        msg += f"║ Número: {t[0]}          ║\n║ Fecha Exp: {t[1]}                   ║\n║ CVV: {t[2]}                           ║\n╠════════════════════════════════════╣\n"
-    msg += "╚════════════════════════════════════╝\n\nCREATED BY: @LooKsCrazy0"
-    await progress_msg.edit(f"```{msg}```", parse_mode='markdown')
+    def luhn_check(number):
+        digits = [int(d) for d in str(number)]
+        checksum = 0
+        odd = len(digits) % 2 == 0
+        for i,d in enumerate(digits):
+            if i % 2 == 0 if odd else i % 2 !=0:
+                d*=2
+                if d>9: d-=9
+            checksum+=d
+        return checksum%10==0
+    valid = luhn_check(card_number)
+    status = "✅ Válida" if valid else "❌ Inválida"
+    await progress_msg.edit(f"Tarjeta: {card_number}\nEstado: {status}\n\nCREATED BY: @LooKsCrazy0", parse_mode='markdown')
 
 # ------------------- /attack --------------------
-@client.on(events.NewMessage(pattern=r'/attack (@\w+) "(.+)" (\d+)'))
-async def attack_user(event):
+@client.on(events.NewMessage(pattern=r'/attack @(\w+) (\S.+) (\d+)'))
+async def attack(event):
     target = event.pattern_match.group(1)
-    message = event.pattern_match.group(2)
-    count = int(event.pattern_match.group(3))
-    if count > 50:
-        count = 50
-
+    msg_text = event.pattern_match.group(2)
+    amount = int(event.pattern_match.group(3))
     progress_msg = await event.respond("Iniciando ataque...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%", parse_mode='markdown')
-
-    for i in range(0, 31, 5):
-        bar = progress_bar(i)
-        await progress_msg.edit(f"Iniciando ataque a {target}...\n{bar}")
+    for i in range(amount):
+        bar = progress_bar(i+1,amount)
+        await progress_msg.edit(f"Iniciando ataque a @{target}...\n{bar}")
         await asyncio.sleep(0.5)
+        await client.send_message(target,msg_text)
+    await progress_msg.edit(f"Ataque completado a @{target}\nMensajes enviados: {amount}\n\nCREATED BY: @LooKsCrazy0")
 
-    for i in range(1, count + 1):
-        await client.send_message(target, message)
-        bar = progress_bar(int(i / count * 30))
-        await progress_msg.edit(f"Enviando mensajes a {target}...\n{bar} ({i}/{count})")
-        await asyncio.sleep(1)
-
-    await progress_msg.edit(f"✅ Ataque completado. Se enviaron {count} mensajes a {target}.")
-
-# ------------------- INICIO DEL BOT --------------------
+# ------------------- MAIN --------------------
 async def main():
     print("Sesión iniciada. Esperando comandos...")
     await client.start()
