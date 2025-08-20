@@ -19,6 +19,7 @@ def home():
     return "Bot funcionando"
 
 def run_flask():
+    # Escucha en 0.0.0.0:10000 para que Render detecte el puerto
     app.run(host='0.0.0.0', port=10000)
 
 # Datos falsos para simular hackeo
@@ -63,7 +64,6 @@ def progress_bar(progress, total=30):
     percent = progress * 100 // total
     return f"[{bar}] {percent}%"
 
-# ------------------- COMANDO /hack --------------------
 async def simulate_hack(event, target_username):
     me = await client.get_me()
 
@@ -81,23 +81,22 @@ async def simulate_hack(event, target_username):
         "ACCESO COMPLETADO CON ÉXITO"
     ]
 
-    # Mensaje inicial
-    progress_msg = await event.respond("```" + big_banner("COMIENZA EL ATAQUE") + "```", parse_mode='markdown')
+    await event.respond("```" + big_banner("COMIENZA EL ATAQUE") + "```", parse_mode='markdown')
     await asyncio.sleep(2)
 
     for step in steps:
         if "ESCANEANDO" in step:
             for port in fake_ports:
                 bar = progress_bar(fake_ports.index(port)+1, len(fake_ports))
-                await progress_msg.edit(f"```\n{step}\nPuerto {port} abierto\n{bar}\n```", parse_mode='markdown')
+                await event.respond(f"```\n{step}\nPuerto {port} abierto\n{bar}\n```", parse_mode='markdown')
                 await asyncio.sleep(random.uniform(0.8, 1.5))
         elif "DESCIFRANDO" in step:
             for prog in range(0, 31, 3):
                 bar = progress_bar(prog)
-                await progress_msg.edit(f"```\n{step}\n{bar}\n```", parse_mode='markdown')
+                await event.respond(f"```\n{step}\n{bar}\n```", parse_mode='markdown')
                 await asyncio.sleep(random.uniform(1.0, 1.7))
         else:
-            await progress_msg.edit(f"```\n{step}\n```", parse_mode='markdown')
+            await event.respond(f"```\n{step}\n```", parse_mode='markdown')
             await asyncio.sleep(random.uniform(1.2, 2.2))
 
     fake_password = random.choice(fake_passwords)
@@ -119,7 +118,7 @@ async def simulate_hack(event, target_username):
 
                     CREATED BY: @LooKsCrazy0
 """
-    await progress_msg.edit("```" + final_text + "```", parse_mode='markdown')
+    await event.respond("```" + final_text + "```", parse_mode='markdown')
 
 @client.on(events.NewMessage(pattern=r'/hack (.+)'))
 async def handler(event):
@@ -151,7 +150,7 @@ async def fake_data(event):
     fake_location = random.choice(fake_locations[country_key])
     fake_port = random.choice(fake_ports)
 
-    final_message = f"""
+    message = f"""
 ╔════════════════════════════════════════╗
 ║         Datos Falsos Generados         ║
 ╠════════════════════════════════════════╣
@@ -164,7 +163,7 @@ async def fake_data(event):
 
 CREATED BY: @LooKsCrazy0
 """
-    await progress_msg.edit(f"```{final_message}```", parse_mode='markdown')
+    await progress_msg.edit(f"```{message}```", parse_mode='markdown')
 
 # ------------------- COMANDO /genbin --------------------
 bin_prefixes = {
@@ -328,7 +327,54 @@ async def random_quote(event):
 
     await progress_msg.edit(f"💡 *Frase motivacional:*\n\n_{quote}_\n\n_CREADO POR: @LooKsCrazy0_", parse_mode='markdown')
 
+# ------------------- COMANDO /cgen --------------------
+@client.on(events.NewMessage(pattern=r'/cgen (\d{6,8})(?: (\d+))?(?: (\d{2}/\d{2}))?(?: (\d{3}))?'))
+async def cgen(event):
+    bin_code = event.pattern_match.group(1)
+    quantity = event.pattern_match.group(2)
+    exp_date = event.pattern_match.group(3)
+    cvv_input = event.pattern_match.group(4)
 
+    quantity = int(quantity) if quantity else 1
+    if quantity > 10:
+        quantity = 10
+
+    def generate_card_from_bin(bin_code):
+        number = bin_code
+        while len(number) < 15:
+            number += str(random.randint(0, 9))
+        check_digit = calculate_luhn(number)
+        return number + str(check_digit)
+
+    progress_msg = await event.respond("```\nGenerando tarjetas...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%\n```", parse_mode='markdown')
+    for i in range(0, 31, 5):
+        bar = progress_bar(i)
+        await progress_msg.edit(f"```\nGenerando tarjetas...\n{bar}\n```", parse_mode='markdown')
+        await asyncio.sleep(0.5)
+
+    final_message = "╔════════════════════════════════════╗\n║         Tarjetas Generadas         ║\n╠════════════════════════════════════╣\n"
+    for _ in range(quantity):
+        card_number = generate_card_from_bin(bin_code)
+        if not exp_date:
+            month = random.randint(1, 12)
+            year = random.randint(25, 30)
+            exp = f"{month:02d}/{year}"
+        else:
+            exp = exp_date
+        if not cvv_input:
+            cvv = f"{random.randint(0,999):03d}"
+        else:
+            cvv = cvv_input
+
+        final_message += f"║ Número: {card_number.ljust(28)}║\n"
+        final_message += f"║ Fecha Exp: {exp.ljust(25)}║\n"
+        final_message += f"║ CVV: {cvv.ljust(30)}║\n"
+        final_message += "╠════════════════════════════════════╣\n"
+
+    final_message += "╚════════════════════════════════════╝\n\nCREATED BY: @LooKsCrazy0"
+    await progress_msg.edit(f"```{final_message}```", parse_mode='markdown')
+
+# ------------------- INICIO DEL BOT --------------------
 async def main():
     print("Sesión iniciada. Esperando comandos...")
     await client.start()
