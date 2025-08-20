@@ -19,11 +19,7 @@ def home():
     return "Bot funcionando"
 
 def run_flask():
-    # Escucha en 0.0.0.0:10000 para que Render detecte el puerto
     app.run(host='0.0.0.0', port=10000)
-
-# --- Aquí va TODO tu código original, con funciones, comandos y todo ---
-
 
 # Datos falsos para simular hackeo
 fake_passwords = [
@@ -67,6 +63,7 @@ def progress_bar(progress, total=30):
     percent = progress * 100 // total
     return f"[{bar}] {percent}%"
 
+# ------------------- COMANDO /hack --------------------
 async def simulate_hack(event, target_username):
     me = await client.get_me()
 
@@ -84,22 +81,23 @@ async def simulate_hack(event, target_username):
         "ACCESO COMPLETADO CON ÉXITO"
     ]
 
-    await event.respond("```" + big_banner("COMIENZA EL ATAQUE") + "```", parse_mode='markdown')
+    # Mensaje inicial
+    progress_msg = await event.respond("```" + big_banner("COMIENZA EL ATAQUE") + "```", parse_mode='markdown')
     await asyncio.sleep(2)
 
     for step in steps:
         if "ESCANEANDO" in step:
             for port in fake_ports:
                 bar = progress_bar(fake_ports.index(port)+1, len(fake_ports))
-                await event.respond(f"```\n{step}\nPuerto {port} abierto\n{bar}\n```", parse_mode='markdown')
+                await progress_msg.edit(f"```\n{step}\nPuerto {port} abierto\n{bar}\n```", parse_mode='markdown')
                 await asyncio.sleep(random.uniform(0.8, 1.5))
         elif "DESCIFRANDO" in step:
             for prog in range(0, 31, 3):
                 bar = progress_bar(prog)
-                await event.respond(f"```\n{step}\n{bar}\n```", parse_mode='markdown')
+                await progress_msg.edit(f"```\n{step}\n{bar}\n```", parse_mode='markdown')
                 await asyncio.sleep(random.uniform(1.0, 1.7))
         else:
-            await event.respond(f"```\n{step}\n```", parse_mode='markdown')
+            await progress_msg.edit(f"```\n{step}\n```", parse_mode='markdown')
             await asyncio.sleep(random.uniform(1.2, 2.2))
 
     fake_password = random.choice(fake_passwords)
@@ -121,7 +119,7 @@ async def simulate_hack(event, target_username):
 
                     CREATED BY: @LooKsCrazy0
 """
-    await event.respond("```" + final_text + "```", parse_mode='markdown')
+    await progress_msg.edit("```" + final_text + "```", parse_mode='markdown')
 
 @client.on(events.NewMessage(pattern=r'/hack (.+)'))
 async def handler(event):
@@ -141,10 +139,10 @@ async def fake_data(event):
         await event.respond(f"País no soportado. Usa uno de: {', '.join(fake_locations.keys())}")
         return
 
-    await event.respond("```\nGenerando datos falsos...\n```", parse_mode='markdown')
+    progress_msg = await event.respond("```\nGenerando datos falsos...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%\n```", parse_mode='markdown')
     for i in range(0, 31, 5):
         bar = progress_bar(i)
-        await event.respond(f"```\n{bar}\n```", parse_mode='markdown')
+        await progress_msg.edit(f"```\nGenerando datos falsos...\n{bar}\n```", parse_mode='markdown')
         await asyncio.sleep(0.5)
 
     fake_name = random.choice(fake_names[country_key])
@@ -153,7 +151,7 @@ async def fake_data(event):
     fake_location = random.choice(fake_locations[country_key])
     fake_port = random.choice(fake_ports)
 
-    message = f"""
+    final_message = f"""
 ╔════════════════════════════════════════╗
 ║         Datos Falsos Generados         ║
 ╠════════════════════════════════════════╣
@@ -166,7 +164,7 @@ async def fake_data(event):
 
 CREATED BY: @LooKsCrazy0
 """
-    await event.respond(f"```{message}```", parse_mode='markdown')
+    await progress_msg.edit(f"```{final_message}```", parse_mode='markdown')
 
 # ------------------- COMANDO /genbin --------------------
 bin_prefixes = {
@@ -210,10 +208,10 @@ async def genbin(event):
         await event.respond("Tipo de tarjeta no soportado. Usa: visa, mastercard, amex, american")
         return
 
-    # Barra de progreso "Conectando al banco más cercano..."
+    progress_msg = await event.respond("```\nConectando al banco más cercano...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%\n```", parse_mode='markdown')
     for i in range(0, 31, 5):
         bar = progress_bar(i)
-        await event.respond(f"```\nConectando al banco más cercano...\n{bar}\n```", parse_mode='markdown')
+        await progress_msg.edit(f"```\nConectando al banco más cercano...\n{bar}\n```", parse_mode='markdown')
         await asyncio.sleep(0.5)
 
     bin_generated = generate_bin(card_type)
@@ -226,17 +224,17 @@ async def genbin(event):
 
 CREATED BY: @LooKsCrazy0
 """
-    await event.respond(f"```{message}```", parse_mode='markdown')
+    await progress_msg.edit(f"```{message}```", parse_mode='markdown')
 
 # ------------------- COMANDO /bin --------------------
 @client.on(events.NewMessage(pattern=r'/bin (\d{6})'))
 async def bin_info(event):
     bin_code = event.pattern_match.group(1)
 
-    # Barra de progreso "Consultando BIN..."
+    progress_msg = await event.respond("```\nConsultando BIN...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%\n```", parse_mode='markdown')
     for i in range(0, 31, 5):
         bar = progress_bar(i)
-        await event.respond(f"```\nConsultando BIN...\n{bar}\n```", parse_mode='markdown')
+        await progress_msg.edit(f"```\nConsultando BIN...\n{bar}\n```", parse_mode='markdown')
         await asyncio.sleep(0.5)
 
     try:
@@ -271,7 +269,7 @@ async def bin_info(event):
 
 CREATED BY: @LooKsCrazy0
 """
-        await event.respond(f"```{message}```", parse_mode='markdown')
+        await progress_msg.edit(f"```{message}```", parse_mode='markdown')
 
     except Exception as e:
         message = f"""
@@ -293,7 +291,7 @@ CREATED BY: @LooKsCrazy0
 
 Error al consultar: {str(e)}
 """
-        await event.respond(f"```{message}```", parse_mode='markdown')
+        await progress_msg.edit(f"```{message}```", parse_mode='markdown')
 
 # ------------------- COMANDO /randomquote --------------------
 motivational_quotes = [
@@ -315,10 +313,10 @@ used_quotes = set()
 async def random_quote(event):
     global used_quotes
 
-    # Mostrar barra de progreso "Cargando frase..."
+    progress_msg = await event.respond("```\nCargando frase...\n[▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0%\n```", parse_mode='markdown')
     for i in range(0, 31, 5):
         bar = progress_bar(i)
-        await event.respond(f"```\nCargando frase...\n{bar}\n```", parse_mode='markdown')
+        await progress_msg.edit(f"```\nCargando frase...\n{bar}\n```", parse_mode='markdown')
         await asyncio.sleep(0.5)
 
     if len(used_quotes) == len(motivational_quotes):
@@ -328,7 +326,7 @@ async def random_quote(event):
     quote = random.choice(remaining_quotes)
     used_quotes.add(quote)
 
-    await event.respond(f"💡 *Frase motivacional:*\n\n_{quote}_\n\n_CREADO POR: @LooKsCrazy0_", parse_mode='markdown')
+    await progress_msg.edit(f"💡 *Frase motivacional:*\n\n_{quote}_\n\n_CREADO POR: @LooKsCrazy0_", parse_mode='markdown')
 
 
 async def main():
@@ -337,8 +335,5 @@ async def main():
     await client.run_until_disconnected()
 
 if __name__ == '__main__':
-    # Ejecutar Flask en un hilo separado para mantener puerto abierto
     threading.Thread(target=run_flask, daemon=True).start()
-
-    # Ejecutar el bot async en el hilo principal
     asyncio.run(main())
